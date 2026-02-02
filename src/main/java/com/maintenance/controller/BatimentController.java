@@ -13,51 +13,62 @@ import javafx.stage.Stage;
 
 public class BatimentController {
     
+    // les variables
     private TableView<Batiment> tableView;
     private ObservableList<Batiment> batimentList;
-    private BatimentDAO batimentDAO;
+    private BatimentDAO dao;
     
     private TextField txtNom;
     private TextField txtLocalisation;
     
+    // initialisation
     public BatimentController() {
-        batimentDAO = new BatimentDAO();
+        dao = new BatimentDAO();
         batimentList = FXCollections.observableArrayList();
     }
     
+    // écran de batiment
     public Scene createScene(Stage stage) {
         BorderPane root = new BorderPane();
-        root.setTop(createHeader());
-        root.setCenter(createTableView());
-        root.setRight(createFormulaire());
+        root.setTop(creerHeader(stage));
+        root.setCenter(creerTableau());
+        root.setRight(creerFormulaire());
         root.setPadding(new Insets(10));
         
-        chargerDonnees();
-        
+        charger(); // Charger les données
         return new Scene(root, 900, 600);
     }
     
-    private VBox createHeader() {
+    // header ie haut de l'écran
+    private HBox creerHeader(Stage stage) {
         Label titre = new Label("Gestion des Bâtiments");
-        titre.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;");
+        titre.setStyle("-fx-font-size: 24px; -fx-text-fill: white;");
         
-        VBox header = new VBox(titre);
+        Button btnRetour = new Button("← Retour");
+        btnRetour.setStyle("-fx-background-color: #388E3C; -fx-text-fill: white;");
+        btnRetour.setOnAction(e -> new com.maintenance.MainApp().start(stage));
+        
+        HBox header = new HBox(20, btnRetour, titre);
         header.setPadding(new Insets(15));
         header.setStyle("-fx-background-color: #4CAF50;");
         return header;
     }
     
-    private TableView<Batiment> createTableView() {
+    // tableau
+    private TableView<Batiment> creerTableau() {
         tableView = new TableView<>();
         
+        // Colonne ID
         TableColumn<Batiment, Integer> colId = new TableColumn<>("ID");
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colId.setPrefWidth(50);
         
+        // Colonne Nom
         TableColumn<Batiment, String> colNom = new TableColumn<>("Nom");
         colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
         colNom.setPrefWidth(300);
         
+        // Colonne Localisation
         TableColumn<Batiment, String> colLoc = new TableColumn<>("Localisation");
         colLoc.setCellValueFactory(new PropertyValueFactory<>("localisation"));
         colLoc.setPrefWidth(230);
@@ -68,14 +79,14 @@ public class BatimentController {
         return tableView;
     }
     
-    private VBox createFormulaire() {
+    // formulaire
+    private VBox creerFormulaire() {
         VBox form = new VBox(10);
         form.setPadding(new Insets(15));
         form.setPrefWidth(300);
-        form.setStyle("-fx-background-color: #f5f5f5; -fx-border-color: #ccc;");
         
-        Label lblTitre = new Label("Formulaire");
-        lblTitre.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        Label titre = new Label("Formulaire");
+        titre.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
         
         txtNom = new TextField();
         txtNom.setPromptText("Nom du bâtiment");
@@ -98,74 +109,85 @@ public class BatimentController {
         btnSupprimer.setMaxWidth(Double.MAX_VALUE);
         btnSupprimer.setOnAction(e -> supprimer());
         
-        form.getChildren().addAll(
-            lblTitre,
-            new Label("Nom :"), txtNom,
-            new Label("Localisation :"), txtLocalisation,
-            btnAjouter, btnModifier, btnSupprimer
-        );
+        form.getChildren().addAll(titre, new Label("Nom :"), txtNom, 
+                                  new Label("Localisation :"), txtLocalisation,
+                                  btnAjouter, btnModifier, btnSupprimer);
         
-        tableView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                txtNom.setText(newVal.getNom());
-                txtLocalisation.setText(newVal.getLocalisation());
+        // pour remplir le formulaire 
+        tableView.getSelectionModel().selectedItemProperty().addListener((obs, old, nouveau) -> {
+            if (nouveau != null) {
+                txtNom.setText(nouveau.getNom());
+                txtLocalisation.setText(nouveau.getLocalisation());
             }
         });
         
         return form;
     }
     
-    private void chargerDonnees() {
+    // pour charger les données 
+    private void charger() {
         batimentList.clear();
-        batimentList.addAll(batimentDAO.getAll());
+        batimentList.addAll(dao.getAll());
     }
     
+    // pour ajouter un batiment
     private void ajouter() {
         if (txtNom.getText().isEmpty() || txtLocalisation.getText().isEmpty()) {
-            showAlert("Erreur", "Remplissez tous les champs !", Alert.AlertType.ERROR);
+            alert("Remplissez tous les champs :");
             return;
         }
         
         Batiment bat = new Batiment(0, txtNom.getText(), txtLocalisation.getText());
         
-        if (batimentDAO.add(bat)) {
-            showAlert("Succès", "Bâtiment ajouté !", Alert.AlertType.INFORMATION);
-            chargerDonnees();
-            txtNom.clear();
-            txtLocalisation.clear();
+        if (dao.add(bat)) {
+            alert("Batiment ajouté");
+            charger();
+            vider();
         }
     }
     
+    // pour modifier un batiment
     private void modifier() {
         Batiment selected = tableView.getSelectionModel().getSelectedItem();
+        
         if (selected == null) {
-            showAlert("Erreur", "Sélectionnez un bâtiment", Alert.AlertType.ERROR);
+            alert("Sélectionnez un bâtiment");
             return;
         }
         
         selected.setNom(txtNom.getText());
         selected.setLocalisation(txtLocalisation.getText());
         
-        if (batimentDAO.update(selected)) {
-            showAlert("Succès", "Bâtiment modifié !", Alert.AlertType.INFORMATION);
-            chargerDonnees();
+        if (dao.update(selected)) {
+            alert("Modifié !");
+            charger();
         }
     }
     
+    // pour supprimer un batiment 
     private void supprimer() {
         Batiment selected = tableView.getSelectionModel().getSelectedItem();
+        
         if (selected == null) {
-            showAlert("Erreur", "Sélectionnez un bâtiment", Alert.AlertType.ERROR);
+            alert("Sélectionnez un bâtiment");
             return;
         }
         
-        if (batimentDAO.delete(selected.getId())) {
-            showAlert("Succès", "Supprimé !", Alert.AlertType.INFORMATION);
-            chargerDonnees();
+        if (dao.delete(selected.getId())) {
+            alert("Supprimé !");
+            charger();
+            vider();
         }
     }
     
-    private void showAlert(String titre, String message, Alert.AlertType type) {
-        new Alert(type, message, ButtonType.OK).showAndWait();
+    // pour valider le formulaire 
+    private void vider() {
+        txtNom.clear();
+        txtLocalisation.clear();
+    }
+    
+    // pour afficher un message
+    private void alert(String message) {
+        new Alert(Alert.AlertType.INFORMATION, message).showAndWait();
     }
 }

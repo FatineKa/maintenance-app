@@ -1,45 +1,47 @@
 package com.maintenance.model;
 
 public class Batiment {
-    private int id;
-    private String nom;
-    private String localisation;
-
-    public Batiment() {
-    }
-
+    
+    private int id;              
+    private String nom;          
+    private String localisation; 
+    
+    // constructeur pour créer un nouveau bâtiment
     public Batiment(int id, String nom, String localisation) {
         this.id = id;
         this.nom = nom;
         this.localisation = localisation;
     }
-
-    public int getId() {
-        return id;
+    
+    // getters pour lire les informations
+    public int getId() { 
+        return id; 
     }
-
-    public void setId(int id) {
-        this.id = id;
+    
+    public String getNom() { 
+        return nom; 
     }
-
-    public String getNom() {
-        return nom;
+    
+    public String getLocalisation() { 
+        return localisation; 
     }
-
-    public void setNom(String nom) {
-        this.nom = nom;
+    
+    // setters pour modifier les informations
+    public void setId(int id) { 
+        this.id = id; 
     }
-
-    public String getLocalisation() {
-        return localisation;
+    
+    public void setNom(String nom) { 
+        this.nom = nom; 
     }
-
-    public void setLocalisation(String localisation) {
-        this.localisation = localisation;
+    
+    public void setLocalisation(String localisation) { 
+        this.localisation = localisation; 
     }
-
+    
+    // Pour afficher le nom 
     @Override
     public String toString() {
-        return nom + " - " + localisation;
+        return nom;
     }
 }
