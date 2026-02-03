@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS interventions (
 
 
 INSERT IGNORE INTO techniciens (id, nom, qualification, disponibilite) VALUES 
-(1, 'Jean Dupont', 'Électricien', 1),
+(1, 'Jean Dupont', 'Electricien', 1),
 (2, 'Kevin Leroy', 'Chauffagiste', 1),
 (3, 'Dani', 'Elect', 1),
 (5, 'Marie Curie', 'Plombier', 1);
@@ -46,16 +46,16 @@ INSERT IGNORE INTO techniciens (id, nom, qualification, disponibilite) VALUES
 
 
 INSERT IGNORE INTO batiments (id, nom, localisation) VALUES 
-(1, 'Bâtiment A', 'Villeneuve d''Ascq'),
-(2, 'Bâtiment B', 'Lille Centre'),
-(3, 'Bâtiment C', 'Cité Scientifique');
+(1, 'Batiment A', 'Villeneuve d Ascq'),
+(2, 'Batiment B', 'Lille Centre'),
+(3, 'Batiment C', 'Cite Scientifique');
 
 
 
 INSERT IGNORE INTO interventions (id, technicien_id, batiment_id, date_intervention, type_intervention, statut, description) VALUES 
-(7, 1, 1, '2026-02-03', 'Réparation Panneau', 'En cours', 'Vérification du circuit électrique principal');
+(7, 1, 1, '2026-02-03', 'Reparation Panneau', 'En cours', 'Verification du circuit electrique principal');
 
 
 INSERT IGNORE INTO interventions (technicien_id, batiment_id, date_intervention, type_intervention, statut, description) VALUES 
-(2, 2, '2026-02-04', 'Maintenance Chaudière', 'Planifiée', 'Entretien annuel obligatoire'),
-(5, 3, '2026-01-15', 'Débouchage', 'Terminée', 'Intervention urgente suite à une fuite');	
+(2, 2, '2026-02-04', 'Maintenance Chaudiere', 'Planifiee', 'Entretien annuel obligatoire'),
+(5, 3, '2026-01-15', 'Debouchage', 'Terminee', 'Intervention urgente suite a une fuite');	
