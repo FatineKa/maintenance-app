@@ -18,4 +18,6 @@ bin/
 
 # OS
 .DS_Store
-Thumbs.db
+Thumbs.db".Rhistory" 
+".DS_Store" 
+"target/" 
